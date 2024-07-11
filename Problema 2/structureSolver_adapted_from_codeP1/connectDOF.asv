@@ -1,0 +1,12 @@
+function Td = connectDOF(data,Tn)
+    nrows = data.nel;
+    ncols = data.nne*data.ni;
+    Td = zeros(nrows,ncols);
+    
+    for i=1:nrows
+        for j=1:ncols
+            col_actual = fix(j/(data.ni+1));
+            Td() = Tn(i,col_actual)
+        end
+    end
+end
