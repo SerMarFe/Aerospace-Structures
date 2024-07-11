@@ -1,2 +1,3 @@
 Just a test
-Added a line here
+Changed this line
+Added another line
