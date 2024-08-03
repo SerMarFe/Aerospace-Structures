@@ -90,25 +90,59 @@ fel = forceFunction(data,x,Tn,m,Tm);
 
 % 2.2 Assemble global stiffness matrix
 
+% Task 2.6
 computer = GlobalStiffnessMatrixComputer(Kel,Td,data.ndof); % create an instance of the class
-computer.compute % compute the stiffness matrix using the class method
-K1 = computer.K; % save the stiffness matrix computed using the class
-[K,f] = assemblyFunction(data,Td,Kel,fel); % compute the stiffness matrix using the original code
+computer.compute() % compute the stiffness matrix using the class method
+K = computer.K; % save the stiffness matrix computed using the class
+[K1,f] = assemblyFunction(data,Td,Kel,fel); % compute the stiffness matrix using the original code
 % Comparison between the stiffness matrix calculated using the class and
 % using the original code
-if all(all(K1 == K))
-    disp("Same result!") % Task 2.6
+if all(all(u1 == u))
+    disp("Same result! :)") % Task 2.6
+else
+    disp("Not same result :(")
 end
 
-%%
 % 2.3.1 Apply prescribed DOFs
 [up,vp] = applyBC(data,p);
 
 % 2.3.2 Apply point loads
 f = pointLoads(data,f,F); %pointLoads(data,Td,f,F) Td???
 
+%%
 % 2.4 Solve system
-[u,r] = solveSystem(data,K,f,up,vp);
+% Task 2.7
+
+u = zeros(data.ndof,1);
+u(vp) = up;
+vf = setdiff((1:data.ndof)',vp);
+
+mat = K(vf,vf);
+vec = f(vf)-K(vf,vp)*up;
+solver = Solver(mat,vec);
+
+[u1,r] = solveSystem(data,K,f,up,vp);
+
+% Comparison between the displacement vector calculated using the class and
+% using the original code
+
+u(vf) = solver.solve(0); % solving using the direct solver
+
+if all(all(u1 == u))
+    disp("Same result! :)") % Task 2.7
+else
+    disp("Not same result :(")
+end
+
+u(vf) = solver.solve(1); % solving using the iterative solver
+
+if all(all(round(u1,14) == round(u,14)))
+    disp("Same result! :)") % Task 2.7
+else
+    disp("Not same result :(")
+end
+
+%%
 
 % 2.5 Compute stress
 sig = stressFunction(data,x,Tn,m,Tm,Td,u);
