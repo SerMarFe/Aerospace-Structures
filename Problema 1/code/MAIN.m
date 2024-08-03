@@ -3,6 +3,8 @@
 clear
 close all
 format long
+addpath 'Task 2'/
+addpath 'Problema 1/code'
 
 %% 1) PREPROCESS
 
@@ -87,8 +89,18 @@ Kel = stiffnessFunction(data,x,Tn,m,Tm);
 fel = forceFunction(data,x,Tn,m,Tm); 
 
 % 2.2 Assemble global stiffness matrix
-[K,f] = assemblyFunction(data,Td,Kel,fel);
 
+computer = GlobalStiffnessMatrixComputer(Kel,Td,data.ndof); % create an instance of the class
+computer.compute % compute the stiffness matrix using the class method
+K1 = computer.K; % save the stiffness matrix computed using the class
+[K,f] = assemblyFunction(data,Td,Kel,fel); % compute the stiffness matrix using the original code
+% Comparison between the stiffness matrix calculated using the class and
+% using the original code
+if all(all(K1 == K))
+    disp("Same result!") % Task 2.6
+end
+
+%%
 % 2.3.1 Apply prescribed DOFs
 [up,vp] = applyBC(data,p);
 

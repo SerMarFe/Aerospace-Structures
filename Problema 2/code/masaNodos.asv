@@ -1,6 +1,0 @@
-function mNodos = masaNodos(data,Mel,Tn)
-    mNodos = zeros(data.nnod,1);
-    for e=1:data.nel
-        mNodos = mNodos + Mel(e)/data.nne
-
-end
